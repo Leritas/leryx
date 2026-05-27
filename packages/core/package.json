@@ -1,0 +1,53 @@
+{
+    "name": "@leryx/core",
+    "version": "0.0.1",
+    "description": "Leryx.js core — declarative 2D game engine with DI, signals, and component lifecycle",
+    "author": "Leritas",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./reactivity": {
+            "types": "./dist/reactivity/index.d.ts",
+            "import": "./dist/reactivity/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Leritas/leryx.git",
+        "directory": "packages/core"
+    },
+    "keywords": [
+        "game-engine",
+        "2d",
+        "canvas",
+        "typescript",
+        "declarative",
+        "signals",
+        "dependency-injection"
+    ],
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "typecheck": "tsc --noEmit",
+        "prepublishOnly": "npm run build && npm run typecheck"
+    },
+    "peerDependencies": {
+        "@preact/signals-core": "^1.14.2"
+    },
+    "devDependencies": {
+        "@preact/signals-core": "^1.14.2"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

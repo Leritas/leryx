@@ -1,0 +1,22 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "noEmit": true,
+        "rootDir": ".",
+        "baseUrl": ".",
+        "types": ["node"],
+        "paths": {
+            "@leryx/core": ["./packages/core/src/index.ts"],
+            "@leryx/core/reactivity": ["./packages/core/src/reactivity/index.ts"],
+            "@leryx/server": ["./plugins/server/src/index.ts"],
+            "@leryx/overlays": ["./plugins/overlays/src/index.ts"]
+        }
+    },
+    "include": [
+        "packages/core/src/**/*.ts",
+        "packages/core/tests/**/*.ts",
+        "plugins/server/src/**/*.ts",
+        "plugins/overlays/src/**/*.ts",
+        "vitest.config.ts"
+    ]
+}

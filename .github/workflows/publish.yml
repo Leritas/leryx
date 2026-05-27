@@ -1,0 +1,133 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'server-v[0-9]+.[0-9]+.[0-9]+'
+      - 'overlays-v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish
+        required: true
+        type: choice
+        options:
+          - core
+          - server
+          - overlays
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      package: ${{ steps.resolve.outputs.package }}
+      workspace: ${{ steps.resolve.outputs.workspace }}
+      package-json-path: ${{ steps.resolve.outputs.package-json-path }}
+      version: ${{ steps.resolve.outputs.version }}
+      verify-tag: ${{ steps.resolve.outputs.verify-tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: resolve
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PKG="${{ github.event.inputs.package }}"
+            echo "verify-tag=false" >> "$GITHUB_OUTPUT"
+          else
+            REF="${{ github.ref_name }}"
+            if [[ "$REF" == server-v* ]]; then
+              PKG="server"
+            elif [[ "$REF" == overlays-v* ]]; then
+              PKG="overlays"
+            else
+              PKG="core"
+            fi
+            echo "verify-tag=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          case "$PKG" in
+            core)
+              WORKSPACE="@leryx/core"
+              PKG_JSON="packages/core/package.json"
+              ;;
+            server)
+              WORKSPACE="@leryx/server"
+              PKG_JSON="plugins/server/package.json"
+              ;;
+            overlays)
+              WORKSPACE="@leryx/overlays"
+              PKG_JSON="plugins/overlays/package.json"
+              ;;
+            *)
+              echo "Unknown package: $PKG"
+              exit 1
+              ;;
+          esac
+
+          VERSION="$(node -p "require('./$PKG_JSON').version")"
+
+          echo "package=$PKG" >> "$GITHUB_OUTPUT"
+          echo "workspace=$WORKSPACE" >> "$GITHUB_OUTPUT"
+          echo "package-json-path=$PKG_JSON" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: resolve
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: https://registry.npmjs.org
+
+      - name: Use npm 11 for Trusted Publishing
+        run: |
+          NPM_PREFIX="$RUNNER_TEMP/npm-publish-cli"
+          mkdir -p "$NPM_PREFIX"
+          npm install -g npm@11.14.0 --prefix "$NPM_PREFIX"
+          echo "$NPM_PREFIX/bin" >> "$GITHUB_PATH"
+          "$NPM_PREFIX/bin/npm" --version
+
+      - name: Install dependencies (registry.npmjs.org)
+        run: npm ci
+        env:
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+
+      - name: Verify git tag matches package.json version
+        if: needs.resolve.outputs.verify-tag == 'true'
+        run: |
+          REF="${{ github.ref_name }}"
+          if [[ "$REF" == server-v* ]]; then
+            TAG="${REF#server-v}"
+          elif [[ "$REF" == overlays-v* ]]; then
+            TAG="${REF#overlays-v}"
+          else
+            TAG="${REF#v}"
+          fi
+          PKG="${{ needs.resolve.outputs.version }}"
+          if [ "$PKG" != "$TAG" ]; then
+            echo "package.json version ($PKG) does not match tag $REF"
+            exit 1
+          fi
+
+      - name: Build @leryx/core
+        if: needs.resolve.outputs.package == 'core' || needs.resolve.outputs.package == 'server' || needs.resolve.outputs.package == 'overlays'
+        run: npm run build -w @leryx/core
+
+      - name: Build @leryx/server
+        if: needs.resolve.outputs.package == 'server'
+        run: npm run build -w @leryx/server
+
+      - name: Build @leryx/overlays
+        if: needs.resolve.outputs.package == 'overlays'
+        run: npm run build -w @leryx/overlays
+
+      - name: Publish to npm
+        run: npm publish -w ${{ needs.resolve.outputs.workspace }} --access public

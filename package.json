@@ -1,0 +1,53 @@
+{
+    "name": "leryx",
+    "private": true,
+    "description": "Leryx.js monorepo — declarative 2D/3D game framework for the web",
+    "author": "Leritas",
+    "license": "MIT",
+    "type": "module",
+    "workspaces": [
+        "packages/*",
+        "plugins/*"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Leritas/leryx.git"
+    },
+    "scripts": {
+        "build": "npm run build -w @leryx/core",
+        "build:all": "npm run build --workspaces --if-present",
+        "dev": "npm run dev -w @leryx/core",
+        "lint": "eslint packages plugins vitest.config.ts",
+        "lint:fix": "eslint packages plugins vitest.config.ts --fix",
+        "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+        "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+        "typecheck": "npm run typecheck -w @leryx/core",
+        "test": "vitest run",
+        "verify": "npm run typecheck && npm run build:all && npm run test && npm run lint && npm run format:check",
+        "prepare": "husky"
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.0",
+        "@eslint/js": "^9.39.1",
+        "@preact/signals-core": "^1.14.2",
+        "eslint": "^9.39.1",
+        "eslint-config-prettier": "^10.1.8",
+        "globals": "^16.5.0",
+        "husky": "^9.1.7",
+        "jsdom": "^24.0.0",
+        "lint-staged": "^16.4.0",
+        "prettier": "^3.2.4",
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.46.4",
+        "vitest": "^1.2.0"
+    },
+    "lint-staged": {
+        "*.{ts,js,mjs,cjs}": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.{json,md}": [
+            "prettier --write"
+        ]
+    }
+}

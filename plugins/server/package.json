@@ -1,0 +1,31 @@
+{
+    "name": "@leryx/server",
+    "version": "0.0.0",
+    "description": "Leryx.js networking plugin (stub)",
+    "author": "Leritas",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Leritas/leryx.git",
+        "directory": "plugins/server"
+    },
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@leryx/core": "0.0.1"
+    },
+    "peerDependencies": {
+        "@leryx/core": "^0.0.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
