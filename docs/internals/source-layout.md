@@ -21,6 +21,12 @@ leryx/                          # private npm workspace root
 │   ├── server/                 # @leryx/server
 │   ├── overlays/               # @leryx/overlays
 │   └── README.md
+├── games/                        # reference games (not npm workspaces until G1)
+│   ├── README.md
+│   └── infinite-blade-dao/       # flagship survivor demo (post-M4)
+│       ├── README.md             # setting & design
+│       └── roadmap.md            # G0–G4 game phases
+├── apps/                         # (future) demo-launcher for GitHub Pages — not created yet
 ├── docs/
 │   ├── README.md               # user docs (stub)
 │   └── internals/              # this folder
@@ -144,6 +150,21 @@ flowchart BT
 2. `renderer` **never** imports `scene` or `entity` types (only read-only DTOs / commands).
 3. `decorators` only touch `metadata-registry`, not runtime instances.
 4. Plugins (`@leryx/server`, etc.) depend on **public** `@leryx/core` API only — no deep imports into `runtime/`.
+
+## `games/` — reference projects
+
+| Path                         | Role                                      |
+| ---------------------------- | ----------------------------------------- |
+| `games/infinite-blade-dao/`  | Flagship survivor demo (post-M4)          |
+| `games/README.md`            | Index of reference games                  |
+
+- **Not** an npm workspace until G1 (first playable slice).
+- Depends on `@leryx/core` via workspace link when `package.json` is added.
+- Production builds target the future **demo launcher** on GitHub Pages (`apps/demo-launcher/` — planned, not in repo yet).
+
+## `apps/` — future demo launcher
+
+Placeholder for a static site that lists and launches playable demos from `games/` and milestone samples. Documented in [roadmap.md](roadmap.md#post-10--demo-launcher-github-pages); implementation is post-M4.
 
 ## `plugins/` packages
 

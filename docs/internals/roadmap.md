@@ -121,6 +121,84 @@ gantt
 
 ---
 
+## Post-1.0 — Reference game: Infinite Blade Dao
+
+**Goal:** End-to-end showcase game built on stable `@leryx/core` — validates the public API beyond milestone demos.
+
+| Field            | Value                                                                        |
+| ---------------- | ---------------------------------------------------------------------------- |
+| **Title**        | Infinite Blade Dao                                                           |
+| **Path**         | `games/infinite-blade-dao/`                                                  |
+| **Game roadmap** | [games/infinite-blade-dao/roadmap.md](../../games/infinite-blade-dao/roadmap.md) |
+| **Genre**        | Top-down survivor / horde (Brotato-like)                                     |
+| **Setting**      | Chinese manhua / xianxia: cultivation, flying swords, qi, inner power        |
+| **Start**        | After `@leryx/core@1.0.0` (M4)                                               |
+| **Current**      | G0 — design stub                                                             |
+
+### Deliverables
+
+- [ ] Playable web build on `@leryx/core`
+- [ ] Full survivor loop (waves → upgrade choice → stat progression)
+- [ ] Smoke test run (5–10 min); featured in user docs
+
+See [games/infinite-blade-dao/roadmap.md](../../games/infinite-blade-dao/roadmap.md) for phases G0–G4.
+
+### Out of scope (v1)
+
+- Multiplayer, procedural maps, full balance pass, localization.
+
+### Done when
+
+- Game runs from monorepo via a single dev command.
+- Demonstrates key 1.0 features without deep imports into core.
+- Mentioned in user getting-started guide.
+
+---
+
+## Post-1.0 — Demo launcher (GitHub Pages)
+
+**Goal:** Public GitHub Pages site — a “launcher” / library of interactive Leryx.js demos. Users open the site, browse game/demo cards, and play in the browser without a local build.
+
+**Status:** Vision only — not implemented until post-M4.
+
+```mermaid
+flowchart TB
+  subgraph ghPages [GitHub Pages]
+    Launcher[Demo Launcher UI]
+    Launcher --> IBD[Infinite Blade Dao]
+    Launcher --> CubeDemo[Jumping Cube]
+    Launcher --> FutureDemo[Future demos...]
+  end
+  subgraph ci [CI on release/tag]
+    Build[Build static bundles per game]
+    Deploy[Deploy to gh-pages branch]
+  end
+  Build --> Deploy --> ghPages
+```
+
+### Planned deliverables
+
+- [ ] Static site shell — grid/list of cards: title, screenshot, description, “Play” button
+- [ ] CI workflow: build `games/*` + milestone demos → deploy to GitHub Pages
+- [ ] Infinite Blade Dao as flagship launcher entry
+- [ ] Milestone demos from M1–M3 (jumping cube, coin collector) as separate cards over time
+
+**Likely location (TBD):** `apps/demo-launcher/` or `sites/playground/` — folder not created yet.
+
+### Out of scope (v1 launcher)
+
+- Accounts, cloud saves, embed SDK for third-party repos.
+
+### Done when
+
+- `https://<org>.github.io/leryx/` (or custom domain) opens the launcher.
+- At least 2 playable demos from the monorepo.
+- Linked from root README and user docs.
+
+**Dependency:** stable `@leryx/core@1.0.0` + at least one full game build (Infinite Blade Dao G2+).
+
+---
+
 ## Package release matrix
 
 | Package           | M1  | M2  | M3  | M4  |
