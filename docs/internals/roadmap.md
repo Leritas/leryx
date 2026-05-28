@@ -30,17 +30,17 @@ gantt
 
 ### Deliverables
 
-- [ ] `bootstrapLeryx()` — module → scene → scheduler
-- [ ] `LeryxMetadataRegistry` + Stage 3 decorators (`@LeryxModule`, `@Entity`, `@Level`, `@Scene`)
-- [ ] Root `Injector` + `inject()`
-- [ ] `FrameScheduler` + `requestAnimationFrame`
-- [ ] Signal flush integrated before Update
-- [ ] `UpdatePhase` / `RenderPhase` separation
-- [ ] `Canvas2DBackend` — `rect` draw commands
-- [ ] Entity lifecycle: `onInit`, `onFixedUpdate`, `onDestroy`
-- [ ] `useHook` + `effect()` in `onInit`
-- [ ] Keyboard input via `@Injectable` `InputService`
-- [ ] Sample: jumping cube (see [framework-syntax.md](framework-syntax.md))
+- [x] `bootstrapLeryx()` — module → scene → scheduler
+- [x] `LeryxMetadataRegistry` + Stage 3 decorators (`@LeryxModule`, `@Entity`, `@Level`, `@Scene`)
+- [x] Root `Injector` + `inject()`
+- [x] `FrameScheduler` + `requestAnimationFrame`
+- [x] Signal flush integrated before Update
+- [x] `UpdatePhase` / `RenderPhase` separation
+- [x] `Canvas2DBackend` — `rect` draw commands
+- [x] Entity lifecycle: `onInit`, `onFixedUpdate`, `onDestroy`
+- [x] `useHook` + `effect()` in `onInit`
+- [x] Keyboard input via `@Injectable` `InputService`
+- [x] Sample: jumping cube (see [framework-syntax.md](framework-syntax.md))
 - [ ] Publish `@leryx/core@0.1.0` to npm
 
 ### Out of scope
@@ -125,15 +125,15 @@ gantt
 
 **Goal:** End-to-end showcase game built on stable `@leryx/core` — validates the public API beyond milestone demos.
 
-| Field            | Value                                                                        |
-| ---------------- | ---------------------------------------------------------------------------- |
-| **Title**        | Infinite Blade Dao                                                           |
-| **Path**         | `games/infinite-blade-dao/`                                                  |
+| Field            | Value                                                                            |
+| ---------------- | -------------------------------------------------------------------------------- |
+| **Title**        | Infinite Blade Dao                                                               |
+| **Path**         | `games/infinite-blade-dao/`                                                      |
 | **Game roadmap** | [games/infinite-blade-dao/roadmap.md](../../games/infinite-blade-dao/roadmap.md) |
-| **Genre**        | Top-down survivor / horde (Brotato-like)                                     |
-| **Setting**      | Chinese manhua / xianxia: cultivation, flying swords, qi, inner power        |
-| **Start**        | After `@leryx/core@1.0.0` (M4)                                               |
-| **Current**      | G0 — design stub                                                             |
+| **Genre**        | Top-down survivor / horde (Brotato-like)                                         |
+| **Setting**      | Chinese manhua / xianxia: cultivation, flying swords, qi, inner power            |
+| **Start**        | After `@leryx/core@1.0.0` (M4)                                                   |
+| **Current**      | G0 — design stub                                                                 |
 
 ### Deliverables
 
@@ -224,6 +224,6 @@ flowchart TB
 
 - Monorepo scaffold + npm workspaces: **done**
 - Internal documentation: **done**
-- Runtime implementation: **not started** (stubs throw / export version only)
+- **Milestone 1 — PoC:** **done** (`@leryx/core@0.1.0`, jumping-cube demo in `demos/jumping-cube/`)
 
-Next engineering task: **Milestone 1 — PoC** starting with `FrameScheduler` and metadata registry.
+Next engineering task: **Milestone 2 — Alpha** (fixed timestep accumulator, LevelManager load/unload, pointer input).

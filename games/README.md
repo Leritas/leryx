@@ -6,8 +6,8 @@ Playable builds will eventually be listed on a **GitHub Pages demo launcher** (s
 
 ## Projects
 
-| Game                                           | Path                       | Status              |
-| ---------------------------------------------- | -------------------------- | ------------------- |
-| [Infinite Blade Dao](infinite-blade-dao/)      | `games/infinite-blade-dao/` | G0 — design stub   |
+| Game                                      | Path                        | Status           |
+| ----------------------------------------- | --------------------------- | ---------------- |
+| [Infinite Blade Dao](infinite-blade-dao/) | `games/infinite-blade-dao/` | G0 — design stub |
 
 More reference games may be added over time.

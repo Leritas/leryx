@@ -7,7 +7,8 @@
     "type": "module",
     "workspaces": [
         "packages/*",
-        "plugins/*"
+        "plugins/*",
+        "demos/*"
     ],
     "repository": {
         "type": "git",
@@ -17,13 +18,14 @@
         "build": "npm run build -w @leryx/core",
         "build:all": "npm run build --workspaces --if-present",
         "dev": "npm run dev -w @leryx/core",
-        "lint": "eslint packages plugins vitest.config.ts",
-        "lint:fix": "eslint packages plugins vitest.config.ts --fix",
+        "lint": "eslint packages plugins demos vitest.config.ts",
+        "lint:fix": "eslint packages plugins demos vitest.config.ts --fix",
         "format": "prettier --write \"**/*.{ts,js,json,md}\"",
         "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
         "typecheck": "npm run typecheck -w @leryx/core",
         "test": "vitest run",
         "verify": "npm run typecheck && npm run build:all && npm run test && npm run lint && npm run format:check",
+        "demo": "npm run dev -w @leryx/demo-jumping-cube",
         "prepare": "husky"
     },
     "devDependencies": {

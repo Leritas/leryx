@@ -1,7 +1,5 @@
 /**
  * @leryx/core/reactivity — thin wrapper over @preact/signals-core.
- *
- * Re-exports signals primitives; engine scheduling hooks will be added in M1.
  */
 
 export {
@@ -13,3 +11,9 @@ export {
     type Signal,
     type ReadonlySignal,
 } from '@preact/signals-core';
+
+export {
+    scheduleEffect,
+    flushScheduledEffects,
+    setSignalFlushCallback,
+} from './effect-scheduler.js';

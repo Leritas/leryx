@@ -23,13 +23,13 @@ Chinese manhua / xianxia tone:
 
 Mapped from Brotato-style survivor gameplay:
 
-| Brotato            | Infinite Blade Dao                                           |
-| ------------------ | ------------------------------------------------------------ |
-| Potato character   | Cultivator (single starter character)                        |
-| Weapons            | Flying swords, qi techniques, talismans                      |
-| Waves              | Demon / tribulation spawns                                   |
-| Shop between waves | Pick one of three techniques or artifacts                    |
-| Stats              | Qi, inner power, move speed, sword count, pierce             |
+| Brotato            | Infinite Blade Dao                               |
+| ------------------ | ------------------------------------------------ |
+| Potato character   | Cultivator (single starter character)            |
+| Weapons            | Flying swords, qi techniques, talismans          |
+| Waves              | Demon / tribulation spawns                       |
+| Shop between waves | Pick one of three techniques or artifacts        |
+| Stats              | Qi, inner power, move speed, sword count, pierce |
 
 ## Planned entities
 
@@ -41,11 +41,11 @@ Mapped from Brotato-style survivor gameplay:
 
 ## Engine dependencies
 
-| Game need              | Engine milestone                          |
-| ---------------------- | ----------------------------------------- |
-| Loop, DI, decorators   | M1                                        |
-| Collision, `@Item`     | M2                                        |
-| Sprites, asset loader  | M3                                        |
-| Stable API, overlays   | M4                                        |
+| Game need             | Engine milestone |
+| --------------------- | ---------------- |
+| Loop, DI, decorators  | M1               |
+| Collision, `@Item`    | M2               |
+| Sprites, asset loader | M3               |
+| Stable API, overlays  | M4               |
 
 Implementation starts after **M4** (`@leryx/core@1.0.0`). See [roadmap.md](roadmap.md) for G1–G4.

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Leryx — Jumping Cube</title>
+        <style>
+            body {
+                margin: 0;
+                min-height: 100vh;
+                display: grid;
+                place-items: center;
+                background: #111;
+                color: #eee;
+                font-family: system-ui, sans-serif;
+            }
+
+            canvas:focus {
+                outline: 2px solid #4a90d9;
+                outline-offset: 2px;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>Jumping Cube</h1>
+            <p>WASD / arrows to move. Space or W to jump. S to fall faster in air.</p>
+            <canvas id="game" width="640" height="360" tabindex="0"></canvas>
+        </main>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>

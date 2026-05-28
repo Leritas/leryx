@@ -17,6 +17,7 @@
         "packages/core/tests/**/*.ts",
         "plugins/server/src/**/*.ts",
         "plugins/overlays/src/**/*.ts",
+        "demos/**/*.ts",
         "vitest.config.ts"
     ]
 }

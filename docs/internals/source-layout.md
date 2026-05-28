@@ -54,7 +54,7 @@ leryx/                          # private npm workspace root
 
 ## `packages/core/src/` — planned module layout
 
-Current stub: `index.ts`, `reactivity/index.ts`. Target structure for implementation:
+Current implementation: `index.ts`, `bootstrap.ts`, `di/`, `decorators/`, `reactivity/`, `runtime/`, `scene/`, `renderer/`. Target structure:
 
 ```
 packages/core/src/
@@ -153,10 +153,10 @@ flowchart BT
 
 ## `games/` — reference projects
 
-| Path                         | Role                                      |
-| ---------------------------- | ----------------------------------------- |
-| `games/infinite-blade-dao/`  | Flagship survivor demo (post-M4)          |
-| `games/README.md`            | Index of reference games                  |
+| Path                        | Role                             |
+| --------------------------- | -------------------------------- |
+| `games/infinite-blade-dao/` | Flagship survivor demo (post-M4) |
+| `games/README.md`           | Index of reference games         |
 
 - **Not** an npm workspace until G1 (first playable slice).
 - Depends on `@leryx/core` via workspace link when `package.json` is added.

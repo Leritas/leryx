@@ -1,6 +1,6 @@
 {
     "name": "@leryx/core",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "Leryx.js core — declarative 2D game engine with DI, signals, and component lifecycle",
     "author": "Leritas",
     "type": "module",

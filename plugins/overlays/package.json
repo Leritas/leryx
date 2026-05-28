@@ -20,10 +20,10 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@leryx/core": "0.0.1"
+        "@leryx/core": "0.1.0"
     },
     "peerDependencies": {
-        "@leryx/core": "^0.0.1"
+        "@leryx/core": "^0.1.0"
     },
     "publishConfig": {
         "access": "public"

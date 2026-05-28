@@ -55,7 +55,7 @@ Tag push triggers `publish.yml`: resolve job → build → `npm publish -w <work
 ```json
 {
     "dependencies": {
-        "@leryx/core": "0.0.1"
+        "@leryx/core": "0.1.0"
     },
     "peerDependencies": {
         "@leryx/core": "^0.1.0"

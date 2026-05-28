@@ -20,13 +20,13 @@ gantt
   M4_Release       :m4, 2026-11, 2M
 ```
 
-| Phase | Theme                          | Status      |
-| ----- | ------------------------------ | ----------- |
-| **G0** | Design stub                    | **current** |
-| **G1** | Vertical slice                 | planned     |
-| **G2** | Survivor core loop             | planned     |
-| **G3** | Meta & build variety           | planned     |
-| **G4** | Polish & showcase              | planned     |
+| Phase  | Theme                | Status      |
+| ------ | -------------------- | ----------- |
+| **G0** | Design stub          | **current** |
+| **G1** | Vertical slice       | planned     |
+| **G2** | Survivor core loop   | planned     |
+| **G3** | Meta & build variety | planned     |
+| **G4** | Polish & showcase    | planned     |
 
 Dates are indicative; G1 starts only after engine M4.
 
