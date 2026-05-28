@@ -41,7 +41,7 @@ gantt
 - [x] `useHook` + `effect()` in `onInit`
 - [x] Keyboard input via `@Injectable` `InputService`
 - [x] Sample: jumping cube (see [framework-syntax.md](framework-syntax.md))
-- [ ] Publish `@leryx/core@0.1.0` to npm
+- [x] Publish `@leryx/core@0.1.0` to npm
 
 ### Out of scope
 
@@ -88,7 +88,7 @@ gantt
 - [ ] Sprite batching + texture atlas stub
 - [ ] Asset loader service (images, JSON spritesheets)
 - [ ] `Matrix3` / camera2d in `math/`
-- [ ] `@leryx/overlays` plugin PoC — FPS graph, entity bounds
+- [ ] `@leryx/overlays` debug overlay PoC — FPS counter, entity bounds (full package roadmap: [plugins/overlays/roadmap.md](../../plugins/overlays/roadmap.md))
 - [ ] Performance budget doc (max draw calls, signal flush cost)
 - [ ] `@leryx/core@0.7.0`, `@leryx/overlays@0.1.0`
 
@@ -108,7 +108,7 @@ gantt
 - [ ] Semver-stable public API for `@leryx/core`
 - [ ] User documentation in `docs/` (getting started, API reference)
 - [ ] `@leryx/server` plugin — transport-agnostic net sync **stub** + sample host/client loop
-- [ ] DevTools: scene graph inspector (overlays + core hooks)
+- [ ] DevTools (`@leryx/overlays`): scene graph inspector + **level/scene flow graph** (menu→menu, location→location transitions)
 - [ ] CI publish green for all packages
 - [ ] Migration guide from 0.7 → 1.0
 - [ ] `@leryx/core@1.0.0`
@@ -118,6 +118,101 @@ gantt
 - npm downloads install without peer dep warnings for documented stack.
 - CHANGELOG for 1.0.0 complete.
 - Two external contributors can fix a labeled “good first issue” using only `docs/internals/`.
+
+---
+
+## Post-1.0 — Engine capabilities
+
+**Goal:** Features every real game needs beyond the M4 API — animation, global state, UI overlays, audio, persistence.
+
+**Status:** Planned — not scheduled until after `@leryx/core@1.0.0`.
+
+```mermaid
+flowchart LR
+  subgraph core ["@leryx/core"]
+    Assets[Asset loader M3]
+    Anim[Animation system]
+    Levels[LevelManager]
+  end
+  subgraph plugins [Plugins]
+    Store["@leryx/store"]
+    Overlays["@leryx/overlays"]
+    Audio["@leryx/audio"]
+  end
+  Assets --> Anim
+  Store --> Overlays
+  Levels --> Overlays
+```
+
+### Entity animation (`@leryx/core`)
+
+Builds on M3 spritesheets and `DrawCommand` type `sprite`.
+
+| Deliverable                               | Description                                                         |
+| ----------------------------------------- | ------------------------------------------------------------------- |
+| Spritesheet asset                         | JSON: frames, pivot, events (`footstep`, `hit`)                     |
+| `AnimationClip` / `AnimationStateMachine` | Clips: idle, run, jump; transitions from flags (grounded, velocity) |
+| Entity integration                        | Metadata on `@Entity`; tick in `onUpdate`, frame in RenderPhase     |
+| Demo upgrade                              | Jumping cube → stickman with run loop + jump one-shot               |
+
+**Dependencies:** M3 asset loader + sprite batching. M3 may ship a stub only; full FSM is Post-1.0.
+
+**Rule:** animation mutates visual state only (frame index, flip); gameplay stays in signals / physics.
+
+### Application state store (`@leryx/store`)
+
+NGXS-style plugin — **not** part of core.
+
+- **Extensible state model** — developers declare **custom** `@State` / feature modules; built-in slices (`GameSettingsState`, `InventoryState`, `PlayerProgressState`) are **reference implementations** and optional presets only
+- **Actions** — sole write path (immutable patches or reducers)
+- **Selectors** — memoized reads for UI and entities (`computed()`-friendly)
+- **DevTools hook** — action log, time-travel preview (via `@leryx/overlays` DevTools layer)
+- **Client persistence** — sync to **browser storage** (`localStorage` default; optional `sessionStorage`, IndexedDB for large saves). Middleware: hydrate on bootstrap, debounced write on action. No cloud in v1
+
+**Coexistence with signals:** entity-local state stays in signals; store holds **global / cross-level** data (settings, inventory, meta-progress). Document the boundary clearly in user docs.
+
+**Target:** `@leryx/store@0.1.0`.
+
+### `@leryx/overlays` — three layers
+
+Single package; details in [plugins/overlays/roadmap.md](../../plugins/overlays/roadmap.md).
+
+| Layer             | Purpose                                | Examples                                                       |
+| ----------------- | -------------------------------------- | -------------------------------------------------------------- |
+| **DevTools**      | Developer panels, structure inspection | Scene graph; **level/scene flow graph**; store action log      |
+| **Debug overlay** | In-game runtime HUD for developers     | FPS, frame time, draw calls; **configurable widget dashboard** |
+| **Game UI**       | Player-facing interface                | Menus, inventory, hotbar, health bar                           |
+
+M3/M4: debug overlay PoC + DevTools foundation. Post-1.0: configurable metrics, game UI primitives.
+
+### Cross-cutting systems
+
+| System                   | Why                             | Home                                        | Priority |
+| ------------------------ | ------------------------------- | ------------------------------------------- | -------- |
+| **Audio**                | Music, SFX, UI sounds           | `@leryx/audio` or `AudioService` in core    | P0       |
+| **Settings**             | Volume, controls, quality       | `@leryx/store` + overlays Game UI           | P0       |
+| **Save / load**          | Progress, inventory             | `@leryx/store` → `localStorage` / IndexedDB | P0       |
+| **Scene / flow**         | Menu → game → pause → game over | `LevelManager` + `@Level` screens           | P0       |
+| **Camera 2D**            | Follow, bounds, shake           | `@leryx/core` math + service                | P1       |
+| **Particles / VFX**      | Hits, trails, loot              | `@leryx/core` or plugin                     | P1       |
+| **Dialog / narrative**   | NPC, quests                     | `@leryx/overlays` Game UI                   | P2       |
+| **Localization**         | i18n                            | `@leryx/i18n` stub or store + JSON          | P2       |
+| **Input**                | Gamepad, rebind                 | `InputService` extension                    | P1       |
+| **Object pooling**       | Bullets, enemies                | `@leryx/core` utility                       | P1       |
+| **Event bus**            | Decoupling without store        | `GameEvents` in core                        | P2       |
+| **Time control**         | Pause, slow-mo                  | Scheduler + Level `onPause`                 | P1       |
+| **Tilemap / grid**       | Platformers, survivors          | Level data post-Alpha                       | P2       |
+| **Achievements / stats** | Meta progression                | Custom store slices                         | P3       |
+| **Networking**           | Co-op                           | `@leryx/server`                             | Post-1.0 |
+
+### Post-1.0 package versions (orienting)
+
+| Package           | Versions                                                               |
+| ----------------- | ---------------------------------------------------------------------- |
+| `@leryx/core`     | `1.1.x` — animation, camera, pooling                                   |
+| `@leryx/overlays` | `0.1` M3 debug overlay; `0.2` M4 DevTools + flow graph; `0.3+` Game UI |
+| `@leryx/store`    | `0.1`                                                                  |
+| `@leryx/audio`    | `0.1`                                                                  |
 
 ---
 
@@ -201,22 +296,26 @@ flowchart TB
 
 ## Package release matrix
 
-| Package           | M1  | M2  | M3  | M4  |
-| ----------------- | --- | --- | --- | --- |
-| `@leryx/core`     | 0.1 | 0.3 | 0.7 | 1.0 |
-| `@leryx/overlays` | —   | —   | 0.1 | 0.3 |
-| `@leryx/server`   | —   | —   | —   | 0.1 |
+| Package           | M1  | M2  | M3  | M4  | Post-1.0 |
+| ----------------- | --- | --- | --- | --- | -------- |
+| `@leryx/core`     | 0.1 | 0.3 | 0.7 | 1.0 | 1.1.x    |
+| `@leryx/overlays` | —   | —   | 0.1 | 0.2 | 0.3+     |
+| `@leryx/server`   | —   | —   | —   | 0.1 | —        |
+| `@leryx/store`    | —   | —   | —   | —   | 0.1      |
+| `@leryx/audio`    | —   | —   | —   | —   | 0.1      |
 
 ---
 
 ## Risks & mitigations
 
-| Risk                                          | Mitigation                                             |
-| --------------------------------------------- | ------------------------------------------------------ |
-| Stage 3 decorator breakage across TS versions | Pin minimum TS in peer docs; CI matrix on TS 5.2 / 5.9 |
-| Signal flush cost per frame                   | `scheduleEffect` batching; benchmark in M3             |
-| WebGL scope creep                             | Same command buffer as Canvas2D                        |
-| Workspace publish misconfiguration            | Automated tag/version check in `publish.yml`           |
+| Risk                                          | Mitigation                                                               |
+| --------------------------------------------- | ------------------------------------------------------------------------ |
+| Stage 3 decorator breakage across TS versions | Pin minimum TS in peer docs; CI matrix on TS 5.2 / 5.9                   |
+| Signal flush cost per frame                   | `scheduleEffect` batching; benchmark in M3                               |
+| WebGL scope creep                             | Same command buffer as Canvas2D                                          |
+| Workspace publish misconfiguration            | Automated tag/version check in `publish.yml`                             |
+| Store vs signals confusion for new users      | Document boundaries; entity-local = signals, global = store              |
+| Overlays: three layers in one package         | Separate entry points (`/debug`, `/devtools`, `/ui`); tree-shake in prod |
 
 ---
 

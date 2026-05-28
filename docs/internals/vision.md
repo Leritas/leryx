@@ -67,7 +67,10 @@ Declarative API → metadata registry → scheduler → command buffer → GPU/C
 ### Monorepo & plugins
 
 - Core: `@leryx/core`.
-- Optional: `@leryx/server`, `@leryx/overlays`, future packages under `plugins/`.
+- Optional: `@leryx/server`, `@leryx/overlays`, `@leryx/store`, `@leryx/audio`, and future packages under `plugins/`.
+- **`@leryx/overlays`** — three layers: DevTools (scene + level flow graph), debug overlay (FPS / metrics), Game UI (menus, HUD, inventory). See [plugins/overlays/roadmap.md](../../plugins/overlays/roadmap.md).
+- **`@leryx/store`** (Post-1.0) — NGXS-style global state: custom `@State` slices, actions, selectors, `localStorage` persistence.
+- **Entity animation** (Post-1.0) — spritesheet clips and state machines on `@Entity`, after M3 assets/WebGL.
 - **npm workspaces** for local linking (semver-aligned `dependencies` → symlink to `packages/core`).
 
 ## Non-goals (v0 / through M1)
