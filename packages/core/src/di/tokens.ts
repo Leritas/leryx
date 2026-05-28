@@ -16,6 +16,8 @@ export interface LeryxModuleMetadata {
 
 export interface EntityMetadata {
     selector: string;
+    level?: string;
+    role?: 'player';
 }
 
 export interface LevelMetadata {
@@ -25,6 +27,7 @@ export interface LevelMetadata {
 export interface ItemMetadata {
     kind: string;
     stackable?: boolean;
+    level?: string;
 }
 
 export interface SceneMetadata {
@@ -40,4 +43,5 @@ export interface CompiledModule {
     sceneClass: InjectionToken | null;
     levelClasses: InjectionToken[];
     entityClasses: InjectionToken[];
+    itemClasses: InjectionToken[];
 }

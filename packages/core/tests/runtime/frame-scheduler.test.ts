@@ -71,7 +71,90 @@ describe('FrameScheduler', () => {
             'render-submit',
             'render-end',
         ]);
-        expect(entity.fixedUpdate).toHaveBeenCalledWith(1 / 60);
+        expect(entity.update).toHaveBeenCalledTimes(1);
         expect(entity.update).toHaveBeenCalledWith(1 / 60);
+    });
+
+    it('runs multiple fixed updates when catching up', () => {
+        const entity = createMockEntity('player');
+        const backend = createMockBackend();
+
+        const scheduler = new FrameScheduler({
+            backend,
+            getEntities: () => [entity],
+            viewport: { width: 640, height: 360 },
+            maxFixedStepsPerFrame: 5,
+        });
+
+        scheduler.tick(0.1);
+
+        expect(entity.fixedUpdate).toHaveBeenCalledTimes(3);
+        expect(entity.update).toHaveBeenCalledTimes(1);
+        expect(entity.update).toHaveBeenCalledWith(0.05);
+    });
+
+    it('renders only dirty entities after the initial frame', () => {
+        const ground = createMockEntity('ground');
+        const player = createMockEntity('player');
+        const backend = createMockBackend();
+
+        ground.getVisualState = vi.fn(() => ({
+            transform: { x: 0, y: 340, width: 640, height: 20 },
+            fill: '#333333',
+        }));
+        player.getVisualState = vi.fn(() => ({
+            renderDescriptor: {
+                type: 'rect' as const,
+                x: 10,
+                y: 10,
+                width: 20,
+                height: 20,
+                fill: '#4a90d9',
+            },
+        }));
+
+        const scheduler = new FrameScheduler({
+            backend,
+            getEntities: () => [ground, player],
+            viewport: { width: 640, height: 360 },
+        });
+
+        scheduler.markDirty('ground');
+        scheduler.markDirty('player');
+        scheduler.tick(1 / 60);
+
+        expect(backend.submit).toHaveBeenLastCalledWith([
+            {
+                type: 'rect',
+                x: 0,
+                y: 340,
+                w: 640,
+                h: 20,
+                fill: '#333333',
+            },
+            {
+                type: 'rect',
+                x: 10,
+                y: 10,
+                w: 20,
+                h: 20,
+                fill: '#4a90d9',
+            },
+        ]);
+
+        backend.submit.mockClear();
+        scheduler.markDirty('player');
+        scheduler.tick(1 / 60);
+
+        expect(backend.submit).toHaveBeenCalledWith([
+            {
+                type: 'rect',
+                x: 10,
+                y: 10,
+                w: 20,
+                h: 20,
+                fill: '#4a90d9',
+            },
+        ]);
     });
 });

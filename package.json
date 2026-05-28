@@ -24,8 +24,10 @@
         "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
         "typecheck": "npm run typecheck -w @leryx/core",
         "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
         "verify": "npm run typecheck && npm run build:all && npm run test && npm run lint && npm run format:check",
         "demo": "npm run dev -w @leryx/demo-jumping-cube",
+        "demo:coins": "npm run dev -w @leryx/demo-coin-collector",
         "prepare": "husky"
     },
     "devDependencies": {
@@ -41,7 +43,8 @@
         "prettier": "^3.2.4",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.4",
-        "vitest": "^1.2.0"
+        "vitest": "^1.2.0",
+        "@vitest/coverage-v8": "^1.2.0"
     },
     "lint-staged": {
         "*.{ts,js,mjs,cjs}": [

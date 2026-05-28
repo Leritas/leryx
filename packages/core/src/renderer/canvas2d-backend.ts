@@ -17,6 +17,13 @@ export class Canvas2DBackend implements RenderBackend {
             if (command.type === 'rect') {
                 ctx.fillStyle = command.fill;
                 ctx.fillRect(command.x, command.y, command.w, command.h);
+                continue;
+            }
+
+            if (command.type === 'text') {
+                ctx.fillStyle = command.fill;
+                ctx.font = `${command.fontSize ?? 16}px system-ui, sans-serif`;
+                ctx.fillText(command.content, command.x, command.y);
             }
         }
     }

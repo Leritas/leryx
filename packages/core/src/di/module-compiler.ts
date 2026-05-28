@@ -41,6 +41,7 @@ export function compileModule(moduleClass: InjectionToken): CompiledModule {
     const entityClasses = declarations.filter(
         (token) => LeryxMetadataRegistry.isEntity(token) && !LeryxMetadataRegistry.isItem(token),
     );
+    const itemClasses = declarations.filter((token) => LeryxMetadataRegistry.isItem(token));
 
     const compiled: CompiledModule = {
         moduleClass,
@@ -49,6 +50,7 @@ export function compileModule(moduleClass: InjectionToken): CompiledModule {
         sceneClass,
         levelClasses,
         entityClasses,
+        itemClasses,
     };
 
     compiledModules.set(moduleClass, compiled);

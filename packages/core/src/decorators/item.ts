@@ -4,7 +4,10 @@ import type { InjectionToken, ItemMetadata } from '../di/tokens.js';
 export function Item(metadata: ItemMetadata) {
     return function <T extends InjectionToken>(target: T, _context: ClassDecoratorContext): T {
         LeryxMetadataRegistry.setItem(target, metadata);
-        LeryxMetadataRegistry.setEntity(target, { selector: metadata.kind });
+        LeryxMetadataRegistry.setEntity(target, {
+            selector: metadata.kind,
+            level: metadata.level,
+        });
         return target;
     };
 }

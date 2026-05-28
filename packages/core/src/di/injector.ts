@@ -60,6 +60,10 @@ export class Injector {
         return this.canProvide(token);
     }
 
+    registerInstance<T>(token: InjectionToken<T>, instance: T): void {
+        this.getRoot().instances.set(token, instance);
+    }
+
     private canProvide(token: InjectionToken): boolean {
         if (this.providers.includes(token)) {
             return true;

@@ -39,4 +39,17 @@ export class SceneGraph {
         this.entities.clear();
         this.entityOrder.length = 0;
     }
+
+    removeEntity(host: EntityHost): void {
+        if (!this.entities.has(host.id)) {
+            return;
+        }
+
+        host.destroy();
+        this.entities.delete(host.id);
+        const index = this.entityOrder.indexOf(host);
+        if (index >= 0) {
+            this.entityOrder.splice(index, 1);
+        }
+    }
 }

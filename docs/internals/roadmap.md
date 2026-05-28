@@ -61,20 +61,33 @@ gantt
 
 ### Deliverables
 
-- [ ] Fixed timestep accumulator (configurable Hz)
-- [ ] `onUpdate` + `onFixedUpdate` contract enforced in scheduler
-- [ ] `LevelManager` — load/unload `@Level`, lifecycle `onLoad` / `onUnload`
-- [ ] Pointer / touch normalized in `InputService`
-- [ ] `math/aabb` + simple AABB collision resolver (no external physics engine)
-- [ ] Plugin-ready physics API surface (interfaces for future `@leryx/physics`)
-- [ ] `@Item` decorator + collect handler
-- [ ] Unit tests: scheduler ordering, DI tree, dirty render set
-- [ ] `@leryx/core@0.3.0`
+- [x] Fixed timestep accumulator (configurable Hz)
+- [x] `onUpdate` + `onFixedUpdate` contract enforced in scheduler
+- [x] `LevelManager` — load/unload `@Level`, lifecycle `onLoad` / `onUnload`
+- [x] Pointer / touch normalized in `InputService`
+- [x] `math/aabb` + simple AABB collision resolver (no external physics engine)
+- [x] Plugin-ready physics API surface (interfaces for future `@leryx/physics`)
+- [x] `@Item` decorator + collect handler
+- [x] Unit tests: scheduler ordering, DI tree, dirty render set
+- [x] `@leryx/core@0.3.0`
 
 ### Done when
 
 - Second demo: cube collects coins, level transition works.
 - Test coverage for runtime critical paths (>70% lines in `runtime/`).
+
+### M2 follow-ups (deferred)
+
+Polish items identified after Alpha; not blockers for M3.
+
+| Item                                                                                   | Why deferred                                                           |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `LevelManager.getActiveLevel()` instance accessor                                      | Nice DX; not required for demos                                        |
+| Configurable collector role token (replace hardcoded `player-cube` / `role: 'player'`) | API design fits better with entity pooling in M3                       |
+| Document `MAX_FRAME_DELTA` vs `maxFixedStepsPerFrame` interaction                      | Docs pass; no runtime change                                           |
+| `entity/` module (`transform.ts`, component storage)                                   | Post-Alpha architecture; see [source-layout.md](source-layout.md)      |
+| Wire `setSignalFlushCallback` for batch dirty propagation                              | Optional; `trackVisualEffect` + `EntityHost.start()` cover Alpha demos |
+| npm publish `@leryx/core@0.3.0`                                                        | Separate step per [publishing.md](publishing.md)                       |
 
 ---
 
@@ -324,5 +337,6 @@ flowchart TB
 - Monorepo scaffold + npm workspaces: **done**
 - Internal documentation: **done**
 - **Milestone 1 — PoC:** **done** (`@leryx/core@0.1.0`, jumping-cube demo in `demos/jumping-cube/`)
+- **Milestone 2 — Alpha:** **done** (`@leryx/core@0.3.0`, coin-collector demo in `demos/coin-collector/`)
 
-Next engineering task: **Milestone 2 — Alpha** (fixed timestep accumulator, LevelManager load/unload, pointer input).
+Next engineering task: **Milestone 3 — Beta** (WebGL backend, asset loader, overlays debug PoC).

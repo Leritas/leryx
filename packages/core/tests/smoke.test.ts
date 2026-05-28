@@ -3,6 +3,6 @@ import { LERYX_VERSION } from '../src/index.js';
 
 describe('@leryx/core', () => {
     it('exports version constant', () => {
-        expect(LERYX_VERSION).toBe('0.1.0');
+        expect(LERYX_VERSION).toBe('0.3.0');
     });
 });

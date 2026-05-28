@@ -4,6 +4,9 @@ import { runInInjectionContext } from './di/injection-context.js';
 import { LeryxMetadataRegistry } from './di/metadata-registry.js';
 import type { InjectionToken } from './di/tokens.js';
 import { Canvas2DBackend } from './renderer/canvas2d-backend.js';
+import { InputService } from './input/input-service.js';
+import { LevelService } from './scene/level-service.js';
+import { ItemCollectSystem } from './scene/item-collect-system.js';
 import { createSceneInstance } from './scene/level-manager.js';
 import { LevelManager } from './scene/level-manager.js';
 import { SceneGraph } from './scene/scene-graph.js';
@@ -18,10 +21,16 @@ export interface BootstrapLeryxOptions {
     canvas: HTMLCanvasElement | string;
     /** Level path to load on startup (defaults to "main") */
     entryLevel?: string;
+    /** Fixed simulation rate in Hz (defaults to 60) */
+    fixedTimestepHz?: number;
+    /** Max fixed steps per display frame (defaults to 5) */
+    maxFixedStepsPerFrame?: number;
 }
 
 export interface BootstrapLeryxResult {
     destroy(): void;
+    loadLevel(path: string): void;
+    levelService: LevelService;
 }
 
 function resolveCanvas(canvas: HTMLCanvasElement | string): HTMLCanvasElement {
@@ -49,6 +58,9 @@ export function bootstrapLeryx(options: BootstrapLeryxOptions): BootstrapLeryxRe
     };
 
     const levelManager = new LevelManager(compiledModule, rootInjector, sceneGraph, markDirty);
+    const levelService = new LevelService();
+    levelService.bind(levelManager);
+    rootInjector.registerInstance(LevelService, levelService);
 
     if (!compiledModule.sceneClass) {
         throw new Error('@leryx/core: Game module must declare exactly one @Scene class.');
@@ -66,6 +78,7 @@ export function bootstrapLeryx(options: BootstrapLeryxOptions): BootstrapLeryxRe
 
     levelManager.loadEntryLevel(entryLevel);
 
+    const itemCollectSystem = new ItemCollectSystem(sceneGraph);
     const backend = new Canvas2DBackend(canvas);
     scheduler = new FrameScheduler({
         backend,
@@ -74,14 +87,28 @@ export function bootstrapLeryx(options: BootstrapLeryxOptions): BootstrapLeryxRe
             width: canvas.width,
             height: canvas.height,
         },
+        fixedTimestepHz: options.fixedTimestepHz,
+        maxFixedStepsPerFrame: options.maxFixedStepsPerFrame,
+        afterUpdate: (entities) => itemCollectSystem.update(entities, markDirty),
     });
 
     scheduler.start();
 
+    if (rootInjector.has(InputService)) {
+        rootInjector.get(InputService).attachCanvas(canvas);
+    }
+
     return {
         destroy(): void {
+            if (rootInjector.has(InputService)) {
+                rootInjector.get(InputService).detach();
+            }
             scheduler?.stop();
             levelManager.destroy();
         },
+        loadLevel(path: string): void {
+            levelManager.loadLevel(path);
+        },
+        levelService,
     };
 }

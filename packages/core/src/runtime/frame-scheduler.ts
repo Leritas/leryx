@@ -2,13 +2,21 @@ import type { EntityHost } from '../scene/entity-host.js';
 import type { RenderBackend, Viewport } from '../renderer/types.js';
 import { CommandBuffer } from '../renderer/command-buffer.js';
 import { DirtySet } from './dirty-set.js';
+import {
+    DEFAULT_FIXED_TIMESTEP_HZ,
+    FixedTimestepAccumulator,
+    fixedTimestepFromHz,
+} from './fixed-timestep.js';
 import { RenderPhase } from './render-phase.js';
-import { FIXED_TIMESTEP, MAX_FRAME_DELTA, SignalFlushPhase, UpdatePhase } from './update-phase.js';
+import { SignalFlushPhase, UpdatePhase } from './update-phase.js';
 
 export interface FrameSchedulerOptions {
     backend: RenderBackend;
     getEntities: () => readonly EntityHost[];
     viewport: Viewport;
+    fixedTimestepHz?: number;
+    maxFixedStepsPerFrame?: number;
+    afterUpdate?: (entities: readonly EntityHost[]) => void;
 }
 
 export class FrameScheduler {
@@ -16,12 +24,18 @@ export class FrameScheduler {
     private readonly updatePhase = new UpdatePhase();
     private readonly signalFlushPhase: SignalFlushPhase;
     private readonly renderPhase: RenderPhase;
+    private readonly fixedTimestep: FixedTimestepAccumulator;
     private rafId: number | null = null;
     private lastTimestamp: number | null = null;
     private running = false;
 
     constructor(private readonly options: FrameSchedulerOptions) {
-        this.signalFlushPhase = new SignalFlushPhase(this.dirtySet);
+        const fixedTimestepHz = options.fixedTimestepHz ?? DEFAULT_FIXED_TIMESTEP_HZ;
+        this.fixedTimestep = new FixedTimestepAccumulator({
+            fixedDt: fixedTimestepFromHz(fixedTimestepHz),
+            maxStepsPerFrame: options.maxFixedStepsPerFrame ?? 5,
+        });
+        this.signalFlushPhase = new SignalFlushPhase();
         this.renderPhase = new RenderPhase(options.backend, new CommandBuffer());
     }
 
@@ -45,17 +59,17 @@ export class FrameScheduler {
 
     tick(dt: number): void {
         const entities = this.options.getEntities();
-        const clampedDt = Math.min(dt, MAX_FRAME_DELTA);
+        const { steps, fixedDt, frameDt } = this.fixedTimestep.consume(dt);
 
-        this.signalFlushPhase.flush(entities);
-        this.updatePhase.runFixedUpdate(entities, FIXED_TIMESTEP);
-        this.updatePhase.runVariableUpdate(entities, clampedDt);
-
-        for (const entity of entities) {
-            this.dirtySet.mark(entity.id);
+        this.signalFlushPhase.flush();
+        for (let step = 0; step < steps; step += 1) {
+            this.updatePhase.runFixedUpdate(entities, fixedDt);
         }
+        this.updatePhase.runVariableUpdate(entities, frameDt);
 
-        this.renderPhase.render(entities, this.dirtySet, this.options.viewport, true);
+        this.options.afterUpdate?.(entities);
+
+        this.renderPhase.render(entities, this.dirtySet, this.options.viewport);
         this.dirtySet.clear();
     }
 
@@ -69,7 +83,9 @@ export class FrameScheduler {
         }
 
         const dt =
-            this.lastTimestamp === null ? FIXED_TIMESTEP : (timestamp - this.lastTimestamp) / 1000;
+            this.lastTimestamp === null
+                ? this.fixedTimestep.fixedDt
+                : (timestamp - this.lastTimestamp) / 1000;
         this.lastTimestamp = timestamp;
 
         this.tick(dt);

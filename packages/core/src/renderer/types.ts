@@ -3,14 +3,23 @@ export interface Viewport {
     height: number;
 }
 
-export type DrawCommand = {
-    type: 'rect';
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    fill: string;
-};
+export type DrawCommand =
+    | {
+          type: 'rect';
+          x: number;
+          y: number;
+          w: number;
+          h: number;
+          fill: string;
+      }
+    | {
+          type: 'text';
+          x: number;
+          y: number;
+          content: string;
+          fill: string;
+          fontSize?: number;
+      };
 
 export interface RenderBackend {
     readonly kind: 'canvas2d' | 'webgl';
@@ -35,8 +44,18 @@ export interface StaticTransformDescriptor {
     height: number;
 }
 
+export interface TextRenderDescriptor {
+    type: 'text';
+    x: number;
+    y: number;
+    content: string;
+    fill: string;
+    fontSize?: number;
+}
+
 export interface EntityVisualState {
     transform?: StaticTransformDescriptor;
     fill?: string;
     renderDescriptor?: RectRenderDescriptor;
+    textDescriptor?: TextRenderDescriptor;
 }

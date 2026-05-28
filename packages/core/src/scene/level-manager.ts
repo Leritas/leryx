@@ -6,8 +6,16 @@ import type { LevelLifecycle } from '../runtime/lifecycle.js';
 import type { SceneLifecycle } from '../runtime/lifecycle.js';
 import { SceneGraph } from './scene-graph.js';
 
+function belongsToLevel(token: InjectionToken, levelPath: string): boolean {
+    const entityMeta = LeryxMetadataRegistry.getEntity(token);
+    const itemMeta = LeryxMetadataRegistry.getItem(token);
+    const level = entityMeta?.level ?? itemMeta?.level;
+    return level === undefined || level === levelPath;
+}
+
 export class LevelManager {
     private activeLevel: LevelLifecycle | null = null;
+    private activeLevelPath: string | null = null;
 
     constructor(
         private readonly compiledModule: CompiledModule,
@@ -17,8 +25,16 @@ export class LevelManager {
     ) {}
 
     loadEntryLevel(entryPath = 'main'): void {
+        this.loadLevel(entryPath);
+    }
+
+    loadLevel(entryPath: string): void {
         const levelToken = this.resolveLevelToken(entryPath);
-        this.loadLevel(levelToken);
+        this.loadLevelToken(levelToken, entryPath);
+    }
+
+    getActivePath(): string | null {
+        return this.activeLevelPath;
     }
 
     unloadActiveLevel(): void {
@@ -27,6 +43,7 @@ export class LevelManager {
         }
         this.sceneGraph.destroyAll();
         this.activeLevel = null;
+        this.activeLevelPath = null;
     }
 
     destroy(): void {
@@ -42,20 +59,29 @@ export class LevelManager {
         const matched = levels.find(
             (token) => LeryxMetadataRegistry.getLevel(token)?.path === entryPath,
         );
-        return matched ?? levels[0]!;
+        if (!matched) {
+            throw new Error(`@leryx/core: No @Level found for path "${entryPath}".`);
+        }
+        return matched;
     }
 
-    private loadLevel(levelToken: InjectionToken): void {
+    private loadLevelToken(levelToken: InjectionToken, levelPath: string): void {
         this.unloadActiveLevel();
 
         const levelInjector = this.rootInjector.createChild();
         const levelInstance = new levelToken() as LevelLifecycle;
         this.activeLevel = levelInstance;
+        this.activeLevelPath = levelPath;
 
         callLifecycleHook(levelInstance, 'onLoad');
 
-        for (const entityToken of this.compiledModule.entityClasses) {
-            this.sceneGraph.spawnEntity(entityToken, levelInjector, this.onDirty);
+        const spawnTokens = [
+            ...this.compiledModule.entityClasses,
+            ...this.compiledModule.itemClasses,
+        ].filter((token) => belongsToLevel(token, levelPath));
+
+        for (const spawnToken of spawnTokens) {
+            this.sceneGraph.spawnEntity(spawnToken, levelInjector, this.onDirty);
         }
 
         this.sceneGraph.startAll();

@@ -47,6 +47,18 @@ export class RenderPhase {
                     fill: visual.fill ?? '#ffffff',
                 });
             }
+
+            const text = visual.textDescriptor;
+            if (text?.type === 'text') {
+                commands.push({
+                    type: 'text',
+                    x: text.x,
+                    y: text.y,
+                    content: text.content,
+                    fill: text.fill,
+                    fontSize: text.fontSize,
+                });
+            }
         }
 
         this.backend.beginFrame(viewport);

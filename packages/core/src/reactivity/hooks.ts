@@ -1,3 +1,4 @@
+import { effect } from '@preact/signals-core';
 import type { EntityHost } from '../scene/entity-host.js';
 
 let activeEntityHost: EntityHost | null = null;
@@ -29,4 +30,12 @@ export function useHook(setup: () => HookDisposer | void): void {
 
 export function getActiveEntityHost(): EntityHost | null {
     return activeEntityHost;
+}
+
+/** Runs a visual effect and marks the owning entity dirty after each run. */
+export function trackVisualEffect(fn: () => void): () => void {
+    return effect(() => {
+        fn();
+        getActiveEntityHost()?.markDirty();
+    });
 }

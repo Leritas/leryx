@@ -2,7 +2,7 @@
 
 **Leryx.js** engine core — declarative 2D games for the browser with Angular-style modules & DI, [Preact signals](https://github.com/preactjs/signals) reactivity, and a Canvas2D render pipeline.
 
-**Status:** `0.1.x` — Milestone 1 (PoC). Canvas2D, keyboard input via DI, entity lifecycle, jumping-cube demo.
+**Status:** `0.3.x` — Milestone 2 (Alpha). Fixed timestep, core `InputService`, AABB physics hooks, level transitions, `@Item` collection. Demos: `demos/jumping-cube/` (M1), `demos/coin-collector/` (M2).
 
 ## Install
 
@@ -112,13 +112,19 @@ Entities expose visual state via `renderDescriptor` (or static `transform` / `fi
 
 ## Example project
 
-Full demo (WASD, jump, gravity): [demos/jumping-cube](https://github.com/Leritas/leryx/tree/main/demos/jumping-cube) in the monorepo.
+Full demos in the monorepo:
+
+| Demo           | Command              | Milestone |
+| -------------- | -------------------- | --------- |
+| Jumping cube   | `npm run demo`       | M1 PoC    |
+| Coin collector | `npm run demo:coins` | M2 Alpha  |
 
 ```bash
 git clone https://github.com/Leritas/leryx.git
 cd leryx
 npm install
 npm run demo
+npm run demo:coins
 ```
 
 ## Repository & docs

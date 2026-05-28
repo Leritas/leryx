@@ -9,6 +9,13 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         include: ['packages/core/tests/**/*.test.ts', 'plugins/**/tests/**/*.test.ts'],
+        coverage: {
+            provider: 'v8',
+            include: ['packages/core/src/runtime/**'],
+            thresholds: {
+                lines: 70,
+            },
+        },
     },
     resolve: {
         alias: {

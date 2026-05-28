@@ -10,6 +10,7 @@ import type {
     EntityVisualState,
     RectRenderDescriptor,
     StaticTransformDescriptor,
+    TextRenderDescriptor,
 } from '../renderer/types.js';
 
 let nextEntityId = 0;
@@ -51,6 +52,7 @@ export class EntityHost {
         }
         this.started = true;
         callLifecycleHook(this.instance, 'onStart');
+        this.markDirty();
     }
 
     fixedUpdate(dt: number): void {
@@ -58,6 +60,7 @@ export class EntityHost {
             return;
         }
         callLifecycleHook(this.instance, 'onFixedUpdate', dt);
+        this.markDirty();
     }
 
     update(dt: number): void {
@@ -65,6 +68,7 @@ export class EntityHost {
             return;
         }
         callLifecycleHook(this.instance, 'onUpdate', dt);
+        this.markDirty();
     }
 
     destroy(): void {
@@ -93,6 +97,7 @@ export class EntityHost {
     getVisualState(): EntityVisualState {
         const instance = this.instance as EntityLifecycle & {
             renderDescriptor?: RectRenderDescriptor;
+            textDescriptor?: TextRenderDescriptor;
             transform?: StaticTransformDescriptor;
             fill?: string;
         };
@@ -108,6 +113,10 @@ export class EntityHost {
 
         return {
             renderDescriptor,
+            textDescriptor:
+                'textDescriptor' in instance
+                    ? (instance as { textDescriptor?: TextRenderDescriptor }).textDescriptor
+                    : undefined,
             transform: instance.transform,
             fill: instance.fill,
         };

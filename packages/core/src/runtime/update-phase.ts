@@ -1,9 +1,10 @@
 import type { EntityHost } from '../scene/entity-host.js';
-import type { DirtySet } from './dirty-set.js';
 import { flushScheduledEffects } from '../reactivity/effect-scheduler.js';
 
-export const FIXED_TIMESTEP = 1 / 60;
-export const MAX_FRAME_DELTA = 0.05;
+import { DEFAULT_FIXED_TIMESTEP_HZ, fixedTimestepFromHz } from './fixed-timestep.js';
+
+export { MAX_FRAME_DELTA } from './timestep-constants.js';
+export const FIXED_TIMESTEP = fixedTimestepFromHz(DEFAULT_FIXED_TIMESTEP_HZ);
 
 export class UpdatePhase {
     runFixedUpdate(entities: readonly EntityHost[], dt: number): void {
@@ -20,15 +21,7 @@ export class UpdatePhase {
 }
 
 export class SignalFlushPhase {
-    constructor(private readonly dirtySet: DirtySet) {}
-
-    flush(entities: readonly EntityHost[]): void {
+    flush(): void {
         flushScheduledEffects();
-
-        if (this.dirtySet.isEmpty()) {
-            for (const entity of entities) {
-                this.dirtySet.mark(entity.id);
-            }
-        }
     }
 }

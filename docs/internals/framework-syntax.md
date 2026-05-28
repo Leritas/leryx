@@ -18,14 +18,15 @@ TypeScript requirement: **≥ 5.2**, `experimentalDecorators: false`, Stage 3 de
 import { LeryxModule, Scene, Level, Entity, Item, Injectable } from '@leryx/core';
 ```
 
-| Decorator                     | Applies to | Purpose                                          |
-| ----------------------------- | ---------- | ------------------------------------------------ |
-| `@LeryxModule({...})`         | `class`    | Bundle providers & declarations                  |
-| `@Scene()`                    | `class`    | Application root                                 |
-| `@Level({ path })`            | `class`    | Loadable level                                   |
-| `@Entity({ selector })`       | `class`    | Game object                                      |
-| `@Item({ kind })`             | `class`    | Pickup / inventory item (extends entity pattern) |
-| `@Injectable({ providedIn })` | `class`    | DI service                                       |
+| Decorator                      | Applies to | Purpose                                          |
+| ------------------------------ | ---------- | ------------------------------------------------ |
+| `@LeryxModule({...})`          | `class`    | Bundle providers & declarations                  |
+| `@Scene()`                     | `class`    | Application root                                 |
+| `@Level({ path })`             | `class`    | Loadable level                                   |
+| `@Entity({ selector })`        | `class`    | Game object                                      |
+| `@Entity({ selector, level })` | `class`    | Spawn only on matching `@Level({ path })`        |
+| `@Item({ kind })`              | `class`    | Pickup / inventory item (extends entity pattern) |
+| `@Injectable({ providedIn })`  | `class`    | DI service                                       |
 
 ### @LeryxModule
 
@@ -73,13 +74,41 @@ export class PlayerCube {
 ### @Item
 
 ```typescript
-@Item({ kind: 'coin', stackable: true })
+@Item({ kind: 'coin', stackable: true, level: 'main' })
 export class CoinItem {
     onCollect(): void {
-        /* ... */
+        /* score++, despawn handled by ItemCollectSystem */
     }
 }
 ```
+
+### LevelService
+
+Runtime level transitions (Alpha+):
+
+```typescript
+import { inject, LevelService } from '@leryx/core';
+
+const levels = inject(LevelService);
+levels.load('complete');
+levels.getActivePath(); // 'complete' | null
+```
+
+Bootstrap also returns `{ loadLevel(path), levelService }`.
+
+### Core InputModule
+
+```typescript
+import { InputModule } from '@leryx/core';
+
+@LeryxModule({
+    imports: [InputModule],
+    declarations: [...],
+})
+export class GameModule {}
+```
+
+`InputService` normalizes keyboard, pointer, and touch relative to the canvas. Call `clearFrameInput()` in entity `onUpdate` to consume edge-triggered signals.
 
 ## Dependency injection
 

@@ -56,11 +56,11 @@ sequenceDiagram
 
   rAF->>sched: tick(dt)
   sched->>sig: flushScheduledEffects()
-  sched->>sig: propagateDirtyFlags()
   sched->>upd: runFixedSteps(accumulator)
   sched->>upd: runVariableStep(dt)
   Note over upd: Input, physics, onUpdate, onFixedUpdate
-  sched->>rnd: buildCommands(sceneGraph)
+  sched->>upd: ItemCollectSystem (AABB overlap)
+  sched->>rnd: buildCommands(dirty entities)
   rnd->>buf: append only dirty subtrees
   buf->>be: submit(commands)
   be->>be: Canvas2D or WebGL draw
@@ -71,7 +71,9 @@ sequenceDiagram
 1. **Signal effects first** — UI/game reactions to state changes apply before physics/input for this frame (configurable later via `scheduleEffect` priority).
 2. **Fixed update** — deterministic simulation steps (`onFixedUpdate`) with accumulated `dt`.
 3. **Variable update** — frame-rate dependent logic (`onUpdate`), input edge detection.
-4. **Render last** — reads **committed** transforms/visual state; no gameplay writes during Render.
+4. **Render last** — reads **committed** transforms/visual state; only entities in `DirtySet` emit commands (static entities skip redraw until explicitly marked dirty again).
+
+Static entities are marked dirty once in `EntityHost.start()`. Dynamic entities mark dirty in `onFixedUpdate` / `onUpdate` or via `trackVisualEffect()`.
 
 ### Connecting signals to the loop
 
